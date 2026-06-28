@@ -29,3 +29,14 @@ Swagger UI: http://localhost:8080/swagger-ui/index.html
 2. POST /api/v1/orders → Place order
 3. POST /api/v1/payments → Initiate payment
 4. GET /api/v1/orders/{id} → Check status
+
+## Assumptions
+- One user can purchase a product only once per sale
+- Payment amount must exactly match order total
+- Payment processor runs as internal module (Option B)
+- Sale window enforced server-side
+
+## Trade-offs
+- Pessimistic locking used for consistency over throughput
+- Scheduler-based expiry (every 30s) instead of Redis TTL
+- Monolith architecture for simpler deployment
