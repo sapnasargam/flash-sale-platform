@@ -25,43 +25,7 @@ Swagger UI: http://localhost:8080/swagger-ui/index.html
 - Inventory expiry scheduler (2 min)
   
 
-  ## Architecture Diagram
-
-Client
-  |
-  v (REST API)
-Spring Boot App (:8080)
-ProductController | OrderController | PaymentController
-  |
-  v
-Service Layer
-ProductService | OrderService | PaymentService | IdempotencyService
-  |                |                  |
-  v                v                  v
-PostgreSQL       Redis            Apache Kafka
-(JPA/Hibernate)  (Idempotency     payment.requested
-                  24h TTL)              |
-                                        v
-                               Payment Processor
-                               80% success / 20% fail
-                               forceStatus override
-                                        |
-                               payment.success / payment.failed
-                                        |
-                               Order Updated + Inventory Confirmed
-
-Concurrency Strategy:
-  1. Pessimistic Lock (SELECT FOR UPDATE)
-  2. Atomic UPDATE WHERE availableStock >= qty
-  3. Redis Idempotency Key
-
-
-Order Lifecycle
-
-PENDING → PAYMENT_PENDING → CONFIRMED
-                          → PAYMENT_FAILED
-       → EXPIRED (2 min timeout)
-       → FAILED (DLQ exhaustion)
+  
 
 ## API Flow
 1. POST /api/v1/products → Create product
